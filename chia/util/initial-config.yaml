@@ -72,6 +72,16 @@ network_overrides: &network_overrides
       MEMPOOL_BLOCK_BUFFER: 10
       MIN_PLOT_SIZE: 18
       SOFT_FORK2_HEIGHT: 0
+      SOFT_FORK3_HEIGHT: 0
+      # planned 2.0 release is June 14, height 2770357 on testnet
+      # 2 weeks later
+      HARD_FORK_HEIGHT": 2834869
+      # another 2 weeks later
+      PLOT_FILTER_128_HEIGHT": 2899381
+      # 3 years later
+      PLOT_FILTER_64_HEIGHT": 7945141
+      # 3 years later
+      PLOT_FILTER_32_HEIGHT": 12990901
   config:
     mainnet:
       address_prefix: "xch"

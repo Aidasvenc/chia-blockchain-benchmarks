@@ -77,6 +77,16 @@ async def async_main(service_config: Dict[str, Any]) -> int:
         # activate softforks immediately on testnet
         if "SOFT_FORK2_HEIGHT" not in overrides:
             overrides["SOFT_FORK2_HEIGHT"] = 0
+        if "SOFT_FORK3_HEIGHT" not in overrides:
+            overrides["SOFT_FORK3_HEIGHT"] = 0
+        if "HARD_FORK_HEIGHT" not in overrides:
+            overrides["HARD_FORK_HEIGHT"] = 2834869
+        if "PLOT_FILTER_128_HEIGHT" not in overrides:
+            overrides["PLOT_FILTER_128_HEIGHT"] = 2899381
+        if "PLOT_FILTER_64_HEIGHT" not in overrides:
+            overrides["PLOT_FILTER_64_HEIGHT"] = 7945141
+        if "PLOT_FILTER_32_HEIGHT" not in overrides:
+            overrides["PLOT_FILTER_32_HEIGHT"] = 12990901
     updated_constants = DEFAULT_CONSTANTS.replace_str_to_bytes(**overrides)
     initialize_service_logging(service_name=SERVICE_NAME, config=config)
     service = create_full_node_service(DEFAULT_ROOT_PATH, config, updated_constants)
