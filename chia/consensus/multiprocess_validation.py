@@ -123,7 +123,7 @@ def batch_pre_validate_blocks(
                     # signature (which also puts in an error) or we didn't validate the signature because we want to
                     # validate it later. add_block will attempt to validate the signature later.
                     if validate_signatures:
-                        log.info("we are entering BLS verification")
+                        log.info(f"block height {block.height}, is transaction block {block.transactions_info is not None}")
                         if npc_result is not None and block.transactions_info is not None:
                             assert npc_result.conds
                             pairs_pks, pairs_msgs = pkm_pairs(
