@@ -70,6 +70,7 @@ def batch_pre_validate_blocks(
 
     # In this case, we are validating full blocks, not headers
     if full_blocks_pickled is not None:
+        log.info("In this case, we are validating full blocks, not headers")
         for i in range(len(full_blocks_pickled)):
             try:
                 block: FullBlock = FullBlock.from_bytes(full_blocks_pickled[i])
@@ -122,6 +123,7 @@ def batch_pre_validate_blocks(
                     # signature (which also puts in an error) or we didn't validate the signature because we want to
                     # validate it later. add_block will attempt to validate the signature later.
                     if validate_signatures:
+                        log.info("we are entering BLS verification")
                         if npc_result is not None and block.transactions_info is not None:
                             assert npc_result.conds
                             pairs_pks, pairs_msgs = pkm_pairs(
@@ -131,7 +133,9 @@ def batch_pre_validate_blocks(
                             )
                             # Using AugSchemeMPL.aggregate_verify, so it's safe to use from_bytes_unchecked
                             pks_objects: List[G1Element] = [G1Element.from_bytes_unchecked(pk) for pk in pairs_pks]
+                            log.info("we are successful!")
                             log.info(f"transaction block {block.height} with {len(pks_objects)} transactions")
+                            log.info("we should have logged block info")
                             if not AugSchemeMPL.aggregate_verify(
                                 pks_objects, pairs_msgs, block.transactions_info.aggregated_signature
                             ):
