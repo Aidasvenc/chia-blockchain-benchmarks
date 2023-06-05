@@ -74,6 +74,7 @@ class DaemonProxy:
                 return None
 
     async def _get(self, request: WsRpcMessage) -> WsRpcMessage:
+        print("requested to start full node")
         request_id = request["request_id"]
         self._request_dict[request_id] = asyncio.Event()
         string = dict_to_json_str(request)
@@ -97,6 +98,7 @@ class DaemonProxy:
         return response
 
     async def start_service(self, service_name: str) -> WsRpcMessage:
+        print("start service requested")
         data = {"service": service_name}
         request = self.format_request("start_service", data)
         response = await self._get(request)

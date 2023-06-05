@@ -17,6 +17,8 @@ def start_cmd(ctx: click.Context, restart: bool, group: tuple[str, ...]) -> None
 
     from .start_funcs import async_start
 
+    print("starting cmd")
+
     root_path = ctx.obj["root_path"]
     config = load_config(root_path, "config.yaml")
     warn_if_beta_enabled(config)
