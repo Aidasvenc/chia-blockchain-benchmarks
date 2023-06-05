@@ -129,7 +129,7 @@ def batch_pre_validate_blocks(
                             )
                             # Using AugSchemeMPL.aggregate_verify, so it's safe to use from_bytes_unchecked
                             pks_objects: List[G1Element] = [G1Element.from_bytes_unchecked(pk) for pk in pairs_pks]
-                            print("block ", block.height, " with ", len(pks_objects), "transactions ")
+                            log.info("transaction block ", block.height, " with ", len(pks_objects), "transactions ")
                             if not AugSchemeMPL.aggregate_verify(
                                 pks_objects, pairs_msgs, block.transactions_info.aggregated_signature
                             ):
@@ -196,6 +196,9 @@ async def pre_validate_blocks_multiprocessing(
         npc_results
         get_block_generator
     """
+
+    log.info("pre validate blocks while syncing")
+
     prev_b: Optional[BlockRecord] = None
     # Collects all the recent blocks (up to the previous sub-epoch)
     recent_blocks: Dict[bytes32, BlockRecord] = {}

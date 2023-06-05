@@ -91,8 +91,6 @@ async def async_main(service_config: Dict[str, Any]) -> int:
 def main() -> int:
     freeze_support()
 
-    print("node is starting up")
-
     with maybe_manage_task_instrumentation(enable=os.environ.get("CHIA_INSTRUMENT_NODE") is not None):
         service_config = load_config_cli(DEFAULT_ROOT_PATH, "config.yaml", SERVICE_NAME)
         target_peer_count = service_config.get("target_peer_count", 80) - service_config.get(
