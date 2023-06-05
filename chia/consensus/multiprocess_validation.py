@@ -66,6 +66,8 @@ def batch_pre_validate_blocks(
     if full_blocks_pickled is not None and header_blocks_pickled is not None:
         assert ValueError("Only one should be passed here")
 
+    log.info("batch pre validating blocks")
+
     # In this case, we are validating full blocks, not headers
     if full_blocks_pickled is not None:
         for i in range(len(full_blocks_pickled)):
@@ -129,7 +131,7 @@ def batch_pre_validate_blocks(
                             )
                             # Using AugSchemeMPL.aggregate_verify, so it's safe to use from_bytes_unchecked
                             pks_objects: List[G1Element] = [G1Element.from_bytes_unchecked(pk) for pk in pairs_pks]
-                            log.info("transaction block ", block.height, " with ", len(pks_objects), "transactions ")
+                            log.info(f"transaction block {block.height} with {len(pks_objects)} transactions")
                             if not AugSchemeMPL.aggregate_verify(
                                 pks_objects, pairs_msgs, block.transactions_info.aggregated_signature
                             ):
@@ -293,6 +295,8 @@ async def pre_validate_blocks_multiprocessing(
         prev_b = block_rec
         diff_ssis.append((difficulty, sub_slot_iters))
 
+    log.info('we have blocks')
+
     block_dict: Dict[bytes32, FullBlock] = {}
     for i, block in enumerate(blocks):
         block_dict[block.header_hash] = block
@@ -347,6 +351,8 @@ async def pre_validate_blocks_multiprocessing(
                 if hb_pickled is None:
                     hb_pickled = []
                 hb_pickled.append(bytes(block))
+
+        log.info("reached the pre validation part, calling it..")
 
         futures.append(
             asyncio.get_running_loop().run_in_executor(
