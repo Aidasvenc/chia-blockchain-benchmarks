@@ -476,7 +476,7 @@ async def validate_block_body(
         if error:
             return error, None
 
-    validate_start = time.monotonic()
+    validate_start = time.time()
 
     # create hash_key list for aggsig check
     pairs_pks: List[bytes48] = []
@@ -503,6 +503,6 @@ async def validate_block_body(
             pairs_pks, pairs_msgs, block.transactions_info.aggregated_signature, force_cache
         ):
             return Err.BAD_AGGREGATE_SIGNATURE, None
-    validate_end = time.time()
-    log.info(f"block {block.height}, {len(pairs_pks)} coins, msg of {sum(len(item) for item in pairs_msgs)} bytes validated in {validate_end - validate_start}")
+        validate_end = time.time()
+        log.info(f"block {block.height}, {len(pairs_pks)} coins, msg of {sum(len(item) for item in pairs_msgs)} bytes validated in {validate_end - validate_start}")
     return None, npc_result

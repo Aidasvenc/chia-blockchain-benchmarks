@@ -123,7 +123,7 @@ def batch_pre_validate_blocks(
                     if validate_signatures:
                         # log.info(f"block height {block.height}, is transaction block {block.transactions_info is not None}, npc_result is not empty {npc_result is not None}")
                         if npc_result is not None and block.transactions_info is not None:
-                            validation_started = time.monotonic()
+                            validation_started = time.time()
                             assert npc_result.conds
                             pairs_pks, pairs_msgs = pkm_pairs(
                                 npc_result.conds,
