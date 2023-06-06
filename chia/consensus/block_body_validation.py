@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import collections
 import logging
+import time
 from typing import Awaitable, Callable, Dict, List, Optional, Set, Tuple, Union
 
 from chiabip158 import PyBIP158
@@ -80,8 +81,6 @@ async def validate_block_body(
             return Err.NOT_BLOCK_BUT_HAS_DATA, None
 
         return None, None  # This means the block is valid
-
-    log.info(f"validating body of transaction block {block.height}")
 
     # All checks below this point correspond to transaction blocks
     # 2. For blocks, foliage block, transactions info must not be empty
@@ -477,6 +476,8 @@ async def validate_block_body(
         if error:
             return error, None
 
+    validate_start = time.monotonic()
+
     # create hash_key list for aggsig check
     pairs_pks: List[bytes48] = []
     pairs_msgs: List[bytes] = []
@@ -485,8 +486,6 @@ async def validate_block_body(
         pairs_pks, pairs_msgs = pkm_pairs(
             npc_result.conds, constants.AGG_SIG_ME_ADDITIONAL_DATA, soft_fork=height >= constants.SOFT_FORK_HEIGHT
         )
-
-    log.info(f"block {block.height}")
 
     # 22. Verify aggregated signature
     # TODO: move this to pre_validate_blocks_multiprocessing so we can sync faster
@@ -500,10 +499,10 @@ async def validate_block_body(
     # finished blocks later.
     if validate_signature:
         force_cache: bool = isinstance(block, UnfinishedBlock)
-        log.info(f"using cache for validation: {force_cache}")
         if not cached_bls.aggregate_verify(
             pairs_pks, pairs_msgs, block.transactions_info.aggregated_signature, force_cache
         ):
             return Err.BAD_AGGREGATE_SIGNATURE, None
-
+    validate_end = time.time()
+    log.info(f"block {block.height}, {len(pairs_pks)} coins, msg of {sum(len(item) for item in pairs_msgs)} bytes validated in {validate_end - validate_start}")
     return None, npc_result
