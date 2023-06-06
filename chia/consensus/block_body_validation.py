@@ -81,6 +81,8 @@ async def validate_block_body(
 
         return None, None  # This means the block is valid
 
+    log.info(f"validating body of transaction block {block.height}")
+
     # All checks below this point correspond to transaction blocks
     # 2. For blocks, foliage block, transactions info must not be empty
     if block.foliage_transaction_block is None or block.transactions_info is None:
@@ -483,6 +485,8 @@ async def validate_block_body(
         pairs_pks, pairs_msgs = pkm_pairs(
             npc_result.conds, constants.AGG_SIG_ME_ADDITIONAL_DATA, soft_fork=height >= constants.SOFT_FORK_HEIGHT
         )
+
+    log.info(f"block {block.height} has {len(pairs_pks)} transactions")
 
     # 22. Verify aggregated signature
     # TODO: move this to pre_validate_blocks_multiprocessing so we can sync faster
