@@ -19,7 +19,6 @@ from chia.util.config import load_config, load_config_cli
 from chia.util.default_root import DEFAULT_ROOT_PATH
 from chia.util.ints import uint16
 from chia.util.task_timing import maybe_manage_task_instrumentation
-from logging.handlers import RotatingFileHandler
 
 # See: https://bugs.python.org/issue29288
 "".encode("idna")
@@ -82,27 +81,6 @@ async def async_main(service_config: Dict[str, Any]) -> int:
             overrides["SOFT_FORK_HEIGHT"] = 0
     updated_constants = DEFAULT_CONSTANTS.replace_str_to_bytes(**overrides)
     initialize_service_logging(service_name=SERVICE_NAME, config=config)
-
-    # initialize our additional logging
-    # create logger
-    validation_logger = logging.getLogger('validation_logger')
-
-    # set logging level
-    validation_logger.setLevel(logging.INFO)
-
-    # create rotating file handler and set level to debug
-    handler = RotatingFilehandler('my_log.log', maxBytes=2000, backupCount=10)
-    handler.setLevel(logging.DEBUG)
-
-    # create formatter
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-    # add formatter to rotating file handler
-    handler.setFormatter(formatter)
-
-    # add ch to logger
-    logger.addHandler(handler)
-
     service = create_full_node_service(DEFAULT_ROOT_PATH, config, updated_constants)
     await service.setup_process_global_state()
     await service.run()
