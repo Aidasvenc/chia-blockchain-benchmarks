@@ -140,7 +140,7 @@ def batch_pre_validate_blocks(
                             else:
                                 successfully_validated_signatures = True
                                 validation_finished = time.time()
-                                log.info(f"block {block.height}, {len(pks_objects)} coins, validated in {validation_finished - validation_started}")
+                                log.info(f"block {block.height}, {len(pks_objects)} coins, msg of {sum(len(item) for item in pairs_msgs)} bytes validated in {validation_finished - validation_started}")
 
                 results.append(
                     PreValidationResult(error_int, required_iters, npc_result, successfully_validated_signatures)
