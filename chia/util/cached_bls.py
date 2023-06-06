@@ -67,7 +67,6 @@ def aggregate_verify(
     if len(pairings) == 0:
         # Using AugSchemeMPL.aggregate_verify, so it's safe to use from_bytes_unchecked
         pks_objects: List[G1Element] = [G1Element.from_bytes_unchecked(pk) for pk in pks]
-        log.info(f"there are {len(pks_objects)} transactions in this block")
         res: bool = AugSchemeMPL.aggregate_verify(pks_objects, msgs, sig)
         return res
 
