@@ -486,7 +486,7 @@ async def validate_block_body(
             npc_result.conds, constants.AGG_SIG_ME_ADDITIONAL_DATA, soft_fork=height >= constants.SOFT_FORK_HEIGHT
         )
 
-    log.info(f"block {block.height} has {len(pairs_pks)} transactions")
+    log.info(f"block {block.height}")
 
     # 22. Verify aggregated signature
     # TODO: move this to pre_validate_blocks_multiprocessing so we can sync faster
@@ -500,6 +500,7 @@ async def validate_block_body(
     # finished blocks later.
     if validate_signature:
         force_cache: bool = isinstance(block, UnfinishedBlock)
+        log.info(f"using cache for validation: {force_cache}")
         if not cached_bls.aggregate_verify(
             pairs_pks, pairs_msgs, block.transactions_info.aggregated_signature, force_cache
         ):
