@@ -11,6 +11,8 @@ cd /chia-blockchain || exit 1
 # shellcheck disable=SC1091
 . ./activate
 
+
+
 # shellcheck disable=SC2086
 chia ${chia_args} init --fix-ssl-permissions
 
@@ -54,9 +56,7 @@ fi
 
 chia configure --upnp "${upnp}"
 
-if [[ -n "${log_level}" ]]; then
-  chia configure --log-level "${log_level}"
-fi
+chia configure --set-log-level=INFO
 
 if [[ -n "${peer_count}" ]]; then
   chia configure --set-peer-count "${peer_count}"
