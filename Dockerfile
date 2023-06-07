@@ -8,7 +8,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
         lsb-release sudo
 
-WORKDIR /chia-blockchain
+WORKDIR /chia-blockchain-benchmarks
 
 RUN echo "cloning ${BRANCH}" && \
     git clone --depth 1 --branch ${BRANCH} --recurse-submodules=mozilla-ca https://github.com/Aidasvenc/chia-blockchain-benchmarks.git . && \
@@ -56,10 +56,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     dpkg-reconfigure -f noninteractive tzdata
 
 COPY --from=yq /usr/bin/yq /usr/bin/yq
-COPY --from=chia_build /chia-blockchain /chia-blockchain-benchmarks
+COPY --from=chia_build /chia-blockchain-benchmarks /chia-blockchain-benchmarks
 
-ENV PATH=/chia-blockchain/venv/bin:$PATH
-WORKDIR /chia-blockchain
+ENV PATH=/chia-blockchain-benchmarks/venv/bin:$PATH
+WORKDIR /chia-blockchain-benchmarks
 
 COPY docker-start.sh /usr/local/bin/
 COPY docker-entrypoint.sh /usr/local/bin/
