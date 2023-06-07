@@ -68,5 +68,5 @@ COPY docker-healthcheck.sh /usr/local/bin/
 HEALTHCHECK --interval=1m --timeout=10s --start-period=20m \
   CMD /bin/bash /usr/local/bin/docker-healthcheck.sh || exit 1
 
-ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["docker-start.sh"]
+ENTRYPOINT ["/bin/bash"]
+CMD ["/bin/bash"]
