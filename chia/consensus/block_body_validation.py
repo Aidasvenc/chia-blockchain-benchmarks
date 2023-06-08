@@ -503,8 +503,8 @@ async def validate_block_body(
 
     # 22. Verify aggregated signature
     # TODO: move this to pre_validate_blocks_multiprocessing so we can sync faster
-    # if not block.transactions_info.aggregated_signature:
-    #    return Err.BAD_AGGREGATE_SIGNATURE, None
+    if not block.transactions_info.aggregated_signature:
+        return Err.BAD_AGGREGATE_SIGNATURE, None
 
     # The pairing cache is not useful while syncing as each pairing is seen
     # only once, so the extra effort of populating it is not justified.
