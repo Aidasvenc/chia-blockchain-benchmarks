@@ -54,19 +54,3 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     rm -rf /var/lib/apt/lists/* && \
     ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime && echo "$TZ" > /etc/timezone && \
     dpkg-reconfigure -f noninteractive tzdata
-
-COPY --from=yq /usr/bin/yq /usr/bin/yq
-COPY --from=chia_build /chia-blockchain-benchmarks /chia-blockchain-benchmarks
-
-ENV PATH=/chia-blockchain-benchmarks/venv/bin:$PATH
-WORKDIR /chia-blockchain-benchmarks
-
-COPY docker-start.sh /usr/local/bin/
-COPY docker-entrypoint.sh /usr/local/bin/
-COPY docker-healthcheck.sh /usr/local/bin/
-
-HEALTHCHECK --interval=1m --timeout=10s --start-period=20m \
-  CMD /bin/bash /usr/local/bin/docker-healthcheck.sh || exit 1
-
-ENTRYPOINT ["/bin/bash"]
-CMD ["/bin/bash"]

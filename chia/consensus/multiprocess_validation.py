@@ -8,7 +8,9 @@ from concurrent.futures import Executor
 from dataclasses import dataclass
 from typing import Awaitable, Callable, Dict, List, Optional, Sequence, Tuple
 
-from blspy import AugSchemeMPL, G1Element
+from blspy import PrivateKey, AugSchemeMPL, PopSchemeMPL, G1Element, G2Element
+from random import randint
+from pymerkle import MerkleTree
 
 from chia.consensus.block_header_validation import validate_finished_header_block
 from chia.consensus.block_record import BlockRecord
@@ -123,19 +125,32 @@ def batch_pre_validate_blocks(
                     if validate_signatures:
                         # log.info(f"block height {block.height}, is transaction block {block.transactions_info is not None}, npc_result is not empty {npc_result is not None}")
                         if npc_result is not None and block.transactions_info is not None:
+
+                            msg = bytes([randint(0, 255) for _ in range(96)])
+                            seed: bytes = bytes([0, 50, 6, 244, 24, 199, 1, 25, 52, 88, 192,
+                                                 19, 18, 12, 89, 6, 220, 18, 102, 58, 209, 82,
+                                                 12, 62, 89, 110, 182, 9, 44, 20, 254, 22])
+                            sk: PrivateKey = AugSchemeMPL.key_gen(seed)
+                            pk: G1Element = sk.get_g1()
+                            sig: G2Element = AugSchemeMPL.sign(sk, msg)
+
                             validation_started = time.time()
+
                             assert npc_result.conds
                             pairs_pks, pairs_msgs = pkm_pairs(
                                 npc_result.conds,
                                 constants.AGG_SIG_ME_ADDITIONAL_DATA,
                                 soft_fork=block.height >= constants.SOFT_FORK_HEIGHT,
                             )
+
+                            digest = MerkleTree()
+                            for msg in pairs_msgs:
+                                digest.append_entry(msg)
+
                             # Using AugSchemeMPL.aggregate_verify, so it's safe to use from_bytes_unchecked
                             pks_objects: List[G1Element] = [G1Element.from_bytes_unchecked(pk) for pk in pairs_pks]
                             # log.info(f"transaction block {block.height} with {len(pks_objects)} transactions")
-                            if not AugSchemeMPL.aggregate_verify(
-                                pks_objects, pairs_msgs, block.transactions_info.aggregated_signature
-                            ):
+                            if not AugSchemeMPL.verify(pk, msg, sig):
                                 error_int = uint16(Err.BAD_AGGREGATE_SIGNATURE.value)
                             else:
                                 successfully_validated_signatures = True

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+  #!/usr/bin/env bash
 
 # shellcheck disable=SC2154
 if [[ -n "${TZ}" ]]; then
