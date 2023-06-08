@@ -3,6 +3,7 @@ from __future__ import annotations
 import collections
 import logging
 import time
+import pymerkle
 from pymerkle import MerkleTree
 from typing import Awaitable, Callable, Dict, List, Optional, Set, Tuple, Union
 from blspy import PrivateKey, AugSchemeMPL, PopSchemeMPL, G1Element, G2Element

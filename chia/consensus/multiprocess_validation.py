@@ -4,6 +4,7 @@ import asyncio
 import logging
 import time
 import traceback
+import pymerkle
 from concurrent.futures import Executor
 from dataclasses import dataclass
 from typing import Awaitable, Callable, Dict, List, Optional, Sequence, Tuple
