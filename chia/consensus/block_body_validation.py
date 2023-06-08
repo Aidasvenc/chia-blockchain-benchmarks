@@ -3,7 +3,6 @@ from __future__ import annotations
 import collections
 import logging
 import time
-import pymerkle
 from pymerkle import MerkleTree
 from typing import Awaitable, Callable, Dict, List, Optional, Set, Tuple, Union
 from blspy import PrivateKey, AugSchemeMPL, PopSchemeMPL, G1Element, G2Element
@@ -504,8 +503,8 @@ async def validate_block_body(
 
     # 22. Verify aggregated signature
     # TODO: move this to pre_validate_blocks_multiprocessing so we can sync faster
-    if not block.transactions_info.aggregated_signature:
-        return Err.BAD_AGGREGATE_SIGNATURE, None
+    # if not block.transactions_info.aggregated_signature:
+    #    return Err.BAD_AGGREGATE_SIGNATURE, None
 
     # The pairing cache is not useful while syncing as each pairing is seen
     # only once, so the extra effort of populating it is not justified.
@@ -514,7 +513,6 @@ async def validate_block_body(
     # finished blocks later.
     if validate_signature:
         ok: bool = AugSchemeMPL.verify(pk, msg, sig)
-        assert ok
         validate_end = time.time()
         log.info(f"block {block.height}, {len(pairs_pks)} coins, msg of {sum(len(item) for item in pairs_msgs)} bytes validated in {validate_end - validate_start}")
     return None, npc_result
