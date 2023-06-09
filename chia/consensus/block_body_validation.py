@@ -493,9 +493,7 @@ async def validate_block_body(
     pairs_msgs: List[bytes] = []
     if npc_result:
         assert npc_result.conds is not None
-        pairs_pks, pairs_msgs = pkm_pairs(
-            npc_result.conds, constants.AGG_SIG_ME_ADDITIONAL_DATA, soft_fork=height >= constants.SOFT_FORK_HEIGHT
-        )
+        pairs_pks, pairs_msgs = pkm_pairs(npc_result.conds, constants.AGG_SIG_ME_ADDITIONAL_DATA)
 
     digest = MerkleTree()
     for msg in pairs_msgs:
