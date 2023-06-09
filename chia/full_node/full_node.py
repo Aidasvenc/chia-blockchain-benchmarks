@@ -948,7 +948,7 @@ class FullNode:
                     continue
                 break
 
-            self.log.info(f"Collected a total of {len(peaks)} peaks.")
+            # self.log.info(f"Collected a total of {len(peaks)} peaks.")
 
             # Based on responses from peers about the current peaks, see which peak is the heaviest
             # (similar to longest chain rule).
@@ -959,7 +959,7 @@ class FullNode:
 
             self.sync_store.target_peak = target_peak
 
-            self.log.info(f"Selected peak {target_peak}")
+            # self.log.info(f"Selected peak {target_peak}")
             # Check which peers are updated to this height
 
             peers = self.server.get_connections(NodeType.FULL_NODE)
@@ -985,12 +985,12 @@ class FullNode:
             ]
 
             # Request weight proof from a random peer
-            self.log.info(f"Total of {len(peers_with_peak)} peers with peak {target_peak.height}")
+            # self.log.info(f"Total of {len(peers_with_peak)} peers with peak {target_peak.height}")
             weight_proof_peer: WSChiaConnection = random.choice(peers_with_peak)
-            self.log.info(
-                f"Requesting weight proof from peer {weight_proof_peer.peer_info.host} "
-                f"up to height {target_peak.height}"
-            )
+            # self.log.info(
+            #    f"Requesting weight proof from peer {weight_proof_peer.peer_info.host} "
+            #    f"up to height {target_peak.height}"
+            #)
             cur_peak: Optional[BlockRecord] = self.blockchain.get_peak()
             if cur_peak is not None and target_peak.weight <= cur_peak.weight:
                 raise ValueError("Not performing sync, already caught up.")
@@ -1034,7 +1034,7 @@ class FullNode:
                 await weight_proof_peer.close(600)
                 raise ValueError("Weight proof validation failed")
 
-            self.log.info(f"Re-checked peers: total of {len(peers_with_peak)} peers with peak {target_peak.height}")
+            # self.log.info(f"Re-checked peers: total of {len(peers_with_peak)} peers with peak {target_peak.height}")
             self.sync_store.set_sync_mode(True)
             self._state_changed("sync_mode")
             # Ensures that the fork point does not change

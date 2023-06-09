@@ -2,8 +2,11 @@ from __future__ import annotations
 
 import collections
 import logging
+import time
+from pymerkle import MerkleTree
 from typing import Awaitable, Callable, Dict, List, Optional, Set, Tuple, Union
-
+from blspy import PrivateKey, AugSchemeMPL, PopSchemeMPL, G1Element, G2Element
+from random import randint
 from chiabip158 import PyBIP158
 
 from chia.consensus.block_record import BlockRecord
@@ -475,12 +478,26 @@ async def validate_block_body(
         if error:
             return error, None
 
+    msg = bytes([randint(0, 255) for _ in range(96)])
+    seed: bytes = bytes([0, 50, 6, 244, 24, 199, 1, 25, 52, 88, 192,
+                         19, 18, 12, 89, 6, 220, 18, 102, 58, 209, 82,
+                         12, 62, 89, 110, 182, 9, 44, 20, 254, 22])
+    sk: PrivateKey = AugSchemeMPL.key_gen(seed)
+    pk: G1Element = sk.get_g1()
+    sig: G2Element = AugSchemeMPL.sign(sk, msg)
+
+    validate_start = time.time()
+
     # create hash_key list for aggsig check
     pairs_pks: List[bytes48] = []
     pairs_msgs: List[bytes] = []
     if npc_result:
         assert npc_result.conds is not None
         pairs_pks, pairs_msgs = pkm_pairs(npc_result.conds, constants.AGG_SIG_ME_ADDITIONAL_DATA)
+
+    digest = MerkleTree()
+    for msg in pairs_msgs:
+        digest.append_entry(msg)
 
     # 22. Verify aggregated signature
     # TODO: move this to pre_validate_blocks_multiprocessing so we can sync faster
@@ -493,10 +510,7 @@ async def validate_block_body(
     # as the cache is likely to be useful when validating the corresponding
     # finished blocks later.
     if validate_signature:
-        force_cache: bool = isinstance(block, UnfinishedBlock)
-        if not cached_bls.aggregate_verify(
-            pairs_pks, pairs_msgs, block.transactions_info.aggregated_signature, force_cache
-        ):
-            return Err.BAD_AGGREGATE_SIGNATURE, None
-
+        ok: bool = AugSchemeMPL.verify(pk, msg, sig)
+        validate_end = time.time()
+        log.info(f"block {block.height}, {len(pairs_pks)} coins, msg of {sum(len(item) for item in pairs_msgs)} bytes validated in {validate_end - validate_start}")
     return None, npc_result

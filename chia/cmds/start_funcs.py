@@ -71,6 +71,7 @@ async def async_start(root_path: Path, config: Dict[str, Any], group: tuple[str,
         return None
 
     for service in services_for_groups(group):
+        print("starting ", service)
         if await daemon.is_running(service_name=service):
             print(f"{service}: ", end="", flush=True)
             if restart:
